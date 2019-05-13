@@ -1,12 +1,17 @@
 #!/bin/bash
 # Guillermo Narvaez
 
-PRODUCT_INSTALL_PATH="/Users/gunarvae/Development/product"
-TEMP_DIR=/Users"/$USER/Development/other/Studio Workspaces/temp/workspaces"
-TEMP_DIR_ESCAPED="/Users/$USER/Development/other/Studio\ Workspaces/temp/workspaces"
-INI_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/ini"
-CONFIG_PATH_PREFIX="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
+# Script variables - Product installation location
+PRODUCT_INSTALL_PATH="/Users/$USER/Development/product"
 INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
+# Script variables - Location for temporary workspaces
+TEMP_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/workspaces"
+# Script variables - Location for *.ini files
+INI_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/ini"
+# Script variables - Product configuration location
+CONFIG_PATH_PREFIX="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
+
+# Text formatting
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[1;34m'
@@ -190,6 +195,7 @@ function do_the_stuff {
 # TODO need a script to initialize the preferences for this script
 # TODO add m2 utils to this script
 # TODO ask user if they want to copy to ini file
+# TODO start new development workspaces (with eclipse preferences)
 
 function main {
     if [ $# -eq 0 ] || [ $1 = "--help" ] || [ $1 = "-help" ] || [ $1 = "-h" ] || [ $1 = "help" ]; then

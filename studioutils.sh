@@ -226,7 +226,6 @@ function do_the_stuff {
 }
 
 # TODO need a script to initialize the preferences for this script
-# TODO add m2 utils to this script
 # TODO ask user if they want to copy to ini file
 # TODO start new development workspaces (with eclipse preferences)
 

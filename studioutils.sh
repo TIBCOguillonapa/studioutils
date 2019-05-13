@@ -40,12 +40,12 @@ cat << EOF
 
             help, --help, -help, -h         Open the help menu.
 
-            CONFIGURATION AREA ---------------------------------------------------------------------
+            CONFIGURATION AREA -----------------------------------------------------------------------
             ls-conf                         List the existing configuration areas.
             rm-conf <version>               Remove the configuration area for <version>.
-            ----------------------------------------------------------------------------------------
+            ------------------------------------------------------------------------------------------
 
-            STUDIO UTILITIES -----------------------------------------------------------------------
+            STUDIO UTILITIES -------------------------------------------------------------------------
             ls                              List all Studio installations.
             open [-t] <version>             Open the specified Studio version if installed.
                   -t  <version>             Opens a workspace in a temporary directory.
@@ -53,7 +53,11 @@ cat << EOF
             uninstall <version>             Removes the the specified installed version of Studio.
             install-path                    Shows the directory where StreamBase is being installed.
             clean                           Deletes all workspaces opend with -t flag.
-            ----------------------------------------------------------------------------------------
+            ------------------------------------------------------------------------------------------
+
+            STUDIO DEVELOPMENT -----------------------------------------------------------------------
+            m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
+            ------------------------------------------------------------------------------------------
 
 EOF
 }
@@ -184,7 +188,36 @@ function do_the_stuff {
             fi
         fi
     elif [ $1 = "m2" ]; then
-        m2.sh
+        if [ ! -f ~/.m2/settings.bak ]; then
+            echo -e "${WARNING} No ~/.m2/settings.bak, aborting."
+            return -1
+        fi
+        if [ $# -eq 2 ]; then
+            if [ $2 = "studio" ]; then
+                if [ ! -f ~/.m2/settings.xml ]; then
+                    echo -e "${WARNING} No settings.xml file exists in ~/.m2/"
+                else
+                    rm ~/.m2/settings.xml
+                    echo -e "${INFO} Maven ~/.m2/settings.xml removed"
+                fi
+            elif [ $2 = "dev" ]; then
+                cp ~/.m2/settings.bak ~/.m2/settings.xml
+                echo -e "${INFO} Maven ~/.m2/settings.xml now in place"
+            else
+                # wrong arguments
+                echo -e "${WARNING} Not a valid argument for m2."
+                return 1;
+            fi
+        else
+            # whatever we have, toggle it
+            if [ -f ~/.m2/settings.xml ];then
+                rm ~/.m2/settings.xml
+                echo -e "${INFO} Maven ~/.m2/settings.xml removed"
+            else
+                cp ~/.m2/settings.bak ~/.m2/settings.xml
+                echo -e "${INFO} Maven ~/.m2/settings.xml now in place"
+            fi
+        fi
     else
         echo -e "${WARNING} Not a valid set of arguments."
         echo -e "${INFO} *** Run 'studio_conf.sh --help' to list all valid options."

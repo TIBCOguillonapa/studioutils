@@ -74,12 +74,12 @@ exists at:
 
         help, --help, -help, -h         Open the help menu.
 
-        CONFIGURATION AREA ---------------------------------------------------------------------
+        CONFIGURATION AREA -----------------------------------------------------------------------
         ls-conf                         List the existing configuration areas.
         rm-conf <version>               Remove the configuration area for <version>.
-        ----------------------------------------------------------------------------------------
+        ------------------------------------------------------------------------------------------
 
-        STUDIO UTILITIES -----------------------------------------------------------------------
+        STUDIO UTILITIES -------------------------------------------------------------------------
         ls                              List all Studio installations.
         open [-t] <version>             Open the specified Studio version if installed.
                 -t  <version>             Opens a workspace in a temporary directory.
@@ -87,6 +87,10 @@ exists at:
         uninstall <version>             Removes the the specified installed version of Studio.
         install-path                    Shows the directory where StreamBase is being installed.
         clean                           Deletes all workspaces opend with -t flag.
-        ----------------------------------------------------------------------------------------
+        ------------------------------------------------------------------------------------------
+
+        STUDIO DEVELOPMENT -----------------------------------------------------------------------
+        m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
+        ------------------------------------------------------------------------------------------
 ```
 

@@ -22,13 +22,13 @@ declare -i SUPPRESS_RETURN_CODE=2
 
 function show_help {
 cat << EOF
-
+    
     studio_config is a simple utility script to manage StreamBase Studio 
-    installations and configurations. This script will not work on a
-    Windows machine.
+    installations and configurations. This script was written for Mac.
 
-    The script assumes that Studio is installed at /opt/tibco/sb-cep
-    and that the configuration area exists at:
+    The installation directory for Studio needs to be configured manually
+    in this script. The script also assumes that the configuration area
+    exists at:
     /Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/
 
             The following are valid command options:
@@ -41,11 +41,11 @@ cat << EOF
             ----------------------------------------------------------------------------------------
 
             STUDIO UTILITIES -----------------------------------------------------------------------
-            ls                              List all installations at /opt/tibco/sb-cep/.
-            open [-t] <version>             Open version installed at /opt/tibco/sb-cep/.
+            ls                              List all Studio installations.
+            open [-t] <version>             Open the specified Studio version if installed.
                   -t  <version>             Opens a workspace in a temporary directory.
-            install <product> [-v <version>] Calls "sudo sbx install --no-uninstall <product>".
-            uninstall <version>             Removes the installation from /opt/tibco/sb-cep/.
+            install <product> [-v <version>] Where product is the same as in "sbx install <product>".
+            uninstall <version>             Removes the the specified installed version of Studio.
             install-path                    Shows the directory where StreamBase is being installed.
             clean                           Deletes all workspaces opend with -t flag.
             ----------------------------------------------------------------------------------------
@@ -104,7 +104,6 @@ function do_the_stuff {
         ls "${TEMP_DIR}" | wc -l | awk -v INFO_STRING="$INFO" '{printf "%s Found %s workspace(s) to remove.\n", INFO_STRING, $1}'
         rm -rf "${TEMP_DIR}"
         mkdir "${TEMP_DIR}"
-        echo -e "${INFO} Done!"
     elif [ $1 = "open" ]; then
         if [ $# -eq 3 ] && [ $2 = "-t" ]; then
             echo -e "${INFO} Opening workspace in temporary location."
@@ -116,7 +115,6 @@ function do_the_stuff {
             if [ -d "${INSTALL_PATH}/$3" ]; then
                 echo -e "${INFO} Opening a temporary workspace."
                 open "${INSTALL_PATH}/$3/StreamBase Studio $3.app"
-                echo -e "${INFO} Done!"
             else
                 echo -e "${WARNING} ${INSTALL_PATH}$3 is not a valid directory"
                 return 1
@@ -132,7 +130,6 @@ function do_the_stuff {
                 return 1
             fi
             open "${INSTALL_PATH}/$2/StreamBase Studio $2.app"
-            echo -e "${INFO} Done!"
         else
             echo -e "${WARNING} ${INSTALL_PATH}$2 is not a valid directory"
             return 1
@@ -162,13 +159,13 @@ function do_the_stuff {
             echo -e "${WARNING} The arguments given are not valid."
             return 1
         else
+            echo -e "${WARNING} The *.ini files associated with this install will not be copied for use of temporary workspaces."
             sbx install --no-uninstall --root "${PRODUCT_INSTALL_PATH}" "$2"
             # sudo sbx install --no-uninstall "$3"
             if [ $? -ne 0 ]; then
                 echo -e "${WARNING} An error occured while installing StreamBase Studio."
                 return 1
             fi
-            echo -e "${WARNING} The .ini files associated with this install have not been copied for temporary workspaces."
         fi
     elif [ $1 = "uninstall" ]; then
         if [ $# -ne 2 ]; then

@@ -12,29 +12,29 @@ The first two variables are used to install StreamBase Studio. You will need to 
 
 ```
 # Script variables - Product installation location
-PRODUCT_INSTALL_PATH="/Users/$USER/Development/product"
-INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
+export PRODUCT_INSTALL_PATH="/Users/$USER/Development/product"
+export INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
 ```
 
 The third variable, `TEMP_DIR`, needs to point to a directory where you will only have temporary workspaces. Using the `clean` option of this script will delete everything in this directory.
 
 ```
 # Script variables - Location for temporary workspaces
-TEMP_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/workspaces"
+export TEMP_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/workspaces"
 ```
 
 The fourth variable, `INI_DIR`, needs to point to a directory where you will store *.ini files. This files will be used to update the configuration of Studio itself when trying to open a regular workspace or a temporary one.
 
 ```
 # Script variables - Location for *.ini files
-INI_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/ini"
+export INI_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/ini"
 ```
 
 The fifth and last variable, `CONFIG_PATH_PREFIX`, needs to point at the directory where Studio configuration areas are stored. This is usually `/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/`.
 
 ```
 # Script variables - Product configuration location
-CONFIG_PATH_PREFIX="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
+export CONFIG_PATH_PREFIX="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
 ```
 
 **Note:** The directories specified in these variables should not be modified manually.

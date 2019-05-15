@@ -6,7 +6,9 @@ A shell script with utilities for TIBCO StreamBase Studio developers.
 
 ### Configuring the Script
 
-There are some variables that are used in the script that you will need to configure manually. These are located at the top of the script. The first two variables are used to install StreamBase Studio. You will need to change `PRODUCT_INSTALL_PATH` to point to a directory where you want Studio to be installed. Installing a new versio of Studio will create `tibco/sb-cep/` if it's not in `PRODUCT_INSTALL_PATH` already.
+There are some variables that are used in the script that you will need to configure manually. **These variables need to be part of the environment in order for the script to work**. Export each of these in `~/.bash_profile` or a similar place. 
+
+The first two variables are used to install StreamBase Studio. You will need to change `PRODUCT_INSTALL_PATH` to point to a directory where you want Studio to be installed. Installing a new versio of Studio will create `tibco/sb-cep/` if it's not in `PRODUCT_INSTALL_PATH` already.
 
 ```
 # Script variables - Product installation location
@@ -36,6 +38,20 @@ CONFIG_PATH_PREFIX="/Users/$USER/Library/Application Support/com.streambase.sb.s
 ```
 
 **Note:** The directories specified in these variables should not be modified manually.
+
+Finally, in order for autocomplete to work you need to source the `studioutils-completion.sh` script. First, create a symbolic link in a directory that is already part of your path like this:
+
+```
+ln -s ~/Scripts/studioutils-completion.sh /usr/local/bin/studioutils-completion
+```
+
+Then, you will need to include something like the following in your `.bash_profile` file or similar.
+
+```
+source studioutils-completion
+```
+
+If you decided to not create a symbolic link, you can then source the `studioutils-completion.sh` file using it's absolute path.
 
 ### Executing the Script
 

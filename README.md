@@ -106,6 +106,8 @@ exists at:
         ------------------------------------------------------------------------------------------
 
         STUDIO DEVELOPMENT -----------------------------------------------------------------------
+        monday-morning <version>        A shortcut for the Monday morning routine.
+                --help                    Help menu for 'monday-morning'.
         m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
         ------------------------------------------------------------------------------------------
 ```

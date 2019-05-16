@@ -58,6 +58,8 @@ cat << EOF
             ------------------------------------------------------------------------------------------
 
             STUDIO DEVELOPMENT -----------------------------------------------------------------------
+            monday-morning <version>        A shortcut for the Monday morning routine.
+                  --help                    Help menu for 'monday-morning'.
             m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
             ------------------------------------------------------------------------------------------
 
@@ -86,9 +88,46 @@ function insert_default_ini_file {
 }
 
 function do_the_stuff {
-    if [ $1 = "ls-conf" ]; then
+    if [ $1 = "monday-morning" ]; then
+        if [ $# -ne 2 ]; then
+            echo -e "${WARNING} The current version of 'trunk' must be specified. For version 10.5 run..."
+            echo -e "${WARNING}     $ studioutils monday-morning 10.5"
+            echo -e "${WARNING} For more help enter..."
+            echo -e "${WARNING}     $ studioutils monday-morning --help"
+            return 1
+        elif [ $2 = "--help" ] || [ $2 = "-h" ] || [ $2 = "help" ] || [ $2 = "-help" ]; then
+cat << EOF
+
+    'studioutils monday-morning <version>' is a shortcut to the Monday morning routine for
+    the SteamBase Studio developer. Running this will uninstall the specified version of
+    Studio, remove the configuration area for that installation, and it will install the
+    latest trunk build.
+
+    IMPORTANT: The version passed in this command must match the version of the current trunk.
+
+EOF
+            return $SUPPRESS_RETURN_CODE
+        else
+            echo -e "${INFO} Four more days until Friday... Updating StreamBase Studio $2."
+            do_the_stuff uninstall $2
+            if [ $? -ne 0 ]; then
+                echo -e "${WARNING} An error occurred trying to uninstall StreamBase Studio $2."
+                return 1
+            fi
+            do_the_stuff rm-conf $2
+            if [ $? -ne 0 ]; then
+                echo -e "${WARNING} An error occurred trying to remove the configuration area for StreamBase Studio $2."
+                return 1
+            fi
+            do_the_stuff install trunk -v $2
+            if [ $? -ne 0 ]; then
+                echo -e "${WARNING} An error occurred trying to install StreamBase Studio $2."
+                return 1
+            fi
+        fi
+    elif [ $1 = "ls-conf" ]; then
         if [ $# -ne 1 ]; then
-            echo -e "${WARNING} The option 'ls' takes no arguments."
+            echo -e "${WARNING} The option 'ls-conf' takes no arguments."
         fi
         ls -l "$CONFIG_PATH_PREFIX"
     elif [ $1 = "rm-conf" ]; then
@@ -154,6 +193,7 @@ function do_the_stuff {
                     return 1
                 fi
             fi
+            echo -e "${INFO} Preparing to install '$2' (StreamBase Studio $4)..."
             sbx install --no-uninstall --root "${PRODUCT_INSTALL_PATH}" "$2"
             # sudo sbx install --no-uninstall "$3"
             if [ $? -ne 0 ]; then
@@ -171,6 +211,7 @@ function do_the_stuff {
             return 1
         else
             echo -e "${WARNING} The *.ini files associated with this install will not be copied for use of temporary workspaces."
+            echo -e "${INFO} Preparing to install '$2' (Unkwown StreamBase Studio version)..."
             sbx install --no-uninstall --root "${PRODUCT_INSTALL_PATH}" "$2"
             # sudo sbx install --no-uninstall "$3"
             if [ $? -ne 0 ]; then
@@ -187,6 +228,8 @@ function do_the_stuff {
             if [ $? -ne 0 ]; then
                 echo -e "${WARNING} An error occured while uninstalling StreamBase Studio."
                 return 1
+            else
+                echo -e "${INFO} StreamBase Studio $2 has been removed."
             fi
         fi
     elif [ $1 = "m2" ]; then

@@ -1,48 +1,48 @@
 # studioutils
 
-A shell script with utilities for TIBCO StreamBase Studio developers.
+A shell script with utilities for TIBCO StreamBase Studio developers. Clone this repository and follow the instructions below to get started.
+
+## What is it?
+
+* An easy way to manage TIBCO StreamBase Studio installations (install and uninstall).
+* An easy way to manage the configuration area for Studio versions.
+* A way to open "temporary" workspaces that will not clutter your file system.
+* An easy command to remove all your "temporary" workspaces.
+* Useful development routines for Studio developers.
 
 ## Getting Started
 
-### Configuring the Script
+### Configuring the Script (Environment Variables)
 
-There are some variables that are used in the script that you will need to configure manually. **These variables need to be part of the environment in order for the script to work**. Export each of these in `~/.bash_profile` or a similar place. 
+There are two variables that are used in the script that you will need to configure manually. **These variables need to be part of the environment in order for the script to work**. Export each of these in `~/.bash_profile` or a similar place.
 
-The first two variables are used to install StreamBase Studio. You will need to change `PRODUCT_INSTALL_PATH` to point to a directory where you want Studio to be installed. Installing a new versio of Studio will create `tibco/sb-cep/` if it's not in `PRODUCT_INSTALL_PATH` already.
-
-```
-# Script variables - Product installation location
-export PRODUCT_INSTALL_PATH="/Users/$USER/Development/product"
-export INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
-```
-
-The third variable, `TEMP_DIR`, needs to point to a directory where you will only have temporary workspaces. Using the `clean` option of this script will delete everything in this directory.
+The first variable is the path to the cloned repository `STUDIOUTILS_LOCATION`, i.e.  the directory called `studioutils`.
 
 ```
-# Script variables - Location for temporary workspaces
-export TEMP_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/workspaces"
+export STUDIOUTILS_LOCATION="/Users/$USER/Development/GitHub/studioutils"
 ```
 
-The fourth variable, `INI_DIR`, needs to point to a directory where you will store *.ini files. This files will be used to update the configuration of Studio itself when trying to open a regular workspace or a temporary one.
+The second variable is the path to the configuration area that TIBCO StreamBase Studio uses.
 
 ```
-# Script variables - Location for *.ini files
-export INI_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/ini"
+export STUDIO_CONFIGURATION_AREA="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
 ```
 
-The fifth and last variable, `CONFIG_PATH_PREFIX`, needs to point at the directory where Studio configuration areas are stored. This is usually `/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/`.
+These two environment variables will be used by the scripts to define `PRODUCT_INSTALL_PATH`, `INSTALL_PATH`, `TEMP_DIR`, and `INI_DIR`.
+
+* `PRODUCT_INSTALL_PATH`: The directory where `sbx` will install new versions of Studio.
+* `INSTALL_PATH`: The directory where we can find the actual installations of Studio (10.4, 10.5, etc.).
+* `TEMP_DIR`: The directory where temporary directories will be created.
+* `INI_DIR`: The directory that will contain *.ini configuration files to start Studio workspaces.
+
+**Note:** Nothing within the `studioutils` directory should be modified manually.
+
+### Configuring the Script (Auto-Completion)
+
+In order for autocomplete to work you need to source the `studioutils-completion.sh` script. First, create a symbolic link in a directory that is already part of your path like this:
 
 ```
-# Script variables - Product configuration location
-export CONFIG_PATH_PREFIX="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
-```
-
-**Note:** The directories specified in these variables should not be modified manually.
-
-Finally, in order for autocomplete to work you need to source the `studioutils-completion.sh` script. First, create a symbolic link in a directory that is already part of your path like this:
-
-```
-ln -s ~/Scripts/studioutils-completion.sh /usr/local/bin/studioutils-completion
+ln -s /<path-to-studioutils>/scripts/studioutils-completion.sh /usr/local/bin/studioutils-completion
 ```
 
 Then, you will need to include something like the following in your `.bash_profile` file or similar.
@@ -55,16 +55,16 @@ If you decided to not create a symbolic link, you can then source the `studiouti
 
 ### Executing the Script
 
-After you have downloaded the script into the desired location in your machine, and configured the script's variables, you will need to make the script executable. To do so, run:
+After you have cloned the repository and followed the steps above, you will need to make the script executable. To do so, run:
 
 ```
-chmod +x studioutils.sh
+chmod +x /<path-to-studioutils>/scripts/studioutils.sh
 ```
 
-After that, you will need to make sure that the script is located in a directory that is part of your path. For this, I suggest creating a symbolic link in a directory that is already part of your path. For example, you can create the link in `/usr/local/bin` or `$HOME/bin` if you have your own directory for scripts. To create the link you need the following (assuming you placed the script in a folder named `Scripts`).
+After that, you will need to make sure that the script is located in a directory that is part of your path. For this, I suggest creating a symbolic link in a directory that is already part of your path. For example, you can create the link in `/usr/local/bin` or `$HOME/bin` if you have your own directory for scripts. To create the link you need the following.
 
 ```
-ln -s ~/Scripts/studioutils.sh /usr/local/bin/studioutils
+ln -s /<path-to-studioutils>/scripts/studioutils.sh /usr/local/bin/studioutils
 ```
 
 If you decide to put the symbolic link somewhere else, you will need to include that directory in your path.
@@ -75,7 +75,7 @@ export PATH=$PATH:/path/to/directory
 
 ## Usage
 
-At this point, you should be able to type `studioutils` from anywhere in your terminal. Doing so should show your the help menu.
+At this point, you should be able to type `studioutils` from anywhere in your terminal. Doing so should show you the help menu.
 
 ``` 
 studio_config is a simple utility script to manage StreamBase Studio 
@@ -98,8 +98,8 @@ exists at:
         STUDIO UTILITIES -------------------------------------------------------------------------
         ls                              List all Studio installations.
         open [-t] <version>             Open the specified Studio version if installed.
-                -t  <version>             Opens a workspace in a temporary directory.
-        install <product> [-v <version>] Where product is the same as in "sbx install <product>".
+                -t  <version>           Opens a workspace in a temporary directory.
+        install <product> <version>     Where product is the same as in "sbx install <product>".
         uninstall <version>             Removes the the specified installed version of Studio.
         install-path                    Shows the directory where StreamBase is being installed.
         clean                           Deletes all workspaces opend with -t flag.
@@ -107,7 +107,7 @@ exists at:
 
         STUDIO DEVELOPMENT -----------------------------------------------------------------------
         monday-morning <version>        A shortcut for the Monday morning routine.
-                --help                    Help menu for 'monday-morning'.
+                --help                  Help menu for 'monday-morning'.
         m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
         ------------------------------------------------------------------------------------------
 ```

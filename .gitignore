@@ -1,0 +1,9 @@
+
+product/*
+!product/.placeholder
+
+configuration/*
+!configuration/.placeholder
+
+temp_workspaces/*
+!temp_workspaces/.placeholder

@@ -1,17 +1,13 @@
 #!/bin/bash
 # Guillermo Narvaez
 
-# !!!!! THESE VARIABLES SHOULD BE PART OF THE ENVIRONMENT (put in ~/.bash_profile or similar) !!!!!
-
-### Script variables - Product installation location
-# export PRODUCT_INSTALL_PATH="/Users/$USER/Development/product"
-# export INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
-### Script variables - Location for temporary workspaces
-# export TEMP_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/workspaces"
-### Script variables - Location for *.ini files
-# export INI_DIR="/Users/$USER/Development/other/Studio Workspaces/temp/ini"
-### Script variables - Product configuration location
-# export CONFIG_PATH_PREFIX="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
+## Script variables - Product installation location
+PRODUCT_INSTALL_PATH="${STUDIOUTILS_LOCATION}/product"
+INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
+## Script variables - Location for temporary workspaces
+TEMP_DIR="${STUDIOUTILS_LOCATION}/temp_workspaces"
+## Script variables - Location for *.ini files
+INI_DIR="${STUDIOUTILS_LOCATION}/configuration"
 
 function suggest() {
     CURR_LOC=$(pwd)
@@ -28,7 +24,7 @@ function suggest() {
     elif [ "${COMP_WORDS[1]}" == "rm-conf" ] && [ "${#COMP_WORDS[@]}" == "3" ]; then
         # Don't allow words that start with '-'
         if [[ "${COMP_WORDS[2]}" != -* ]]; then
-            cd "$CONFIG_PATH_PREFIX"
+            cd "$STUDIO_CONFIGURATION_AREA"
             COMPREPLY=($(compgen -d "${COMP_WORDS[2]}"))
             cd "$CURR_LOC"
         fi

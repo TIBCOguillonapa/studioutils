@@ -172,7 +172,7 @@ function clean {
     mkdir "${TEMP_DIR}"
 }
 
-function open {
+function openStudio {
     if [ $# -eq 3 ] && [ $2 = "-t" ]; then
         if [ -d "${INSTALL_PATH}/$3" ]; then
             echo -e "${INFO} Opening workspace in temporary location."
@@ -246,7 +246,7 @@ function uninstall {
     fi
 }
 
-function m2 {
+function m2Routine {
     if [ ! -f ~/.m2/settings.bak ]; then
         echo -e "${WARNING} No ~/.m2/settings.bak, aborting."
         return -1
@@ -293,13 +293,13 @@ function do_the_stuff {
     elif [ $1 = "clean" ]; then
         clean $@
     elif [ $1 = "open" ]; then
-        open $@
+        openStudio $@
     elif [ $1 = "install" ]; then
         install $@
     elif [ $1 = "uninstall" ]; then
         uninstall $@
     elif [ $1 = "m2" ]; then
-        m2 $@
+        m2Routine $@
     else
         echo -e "${WARNING} Not a valid set of arguments."
         echo -e "${INFO} *** Run 'studio_conf.sh --help' to list all valid options."

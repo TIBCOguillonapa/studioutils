@@ -108,7 +108,7 @@ cat << EOF
 EOF
             return $SUPPRESS_RETURN_CODE
         else
-            echo -e "${INFO} Four more days until Friday... Updating StreamBase Studio $2."
+            echo -e "${INFO} It's almost Friday... Updating StreamBase Studio $2."
             do_the_stuff uninstall $2
             if [ $? -ne 0 ]; then
                 echo -e "${WARNING} An error occurred trying to uninstall StreamBase Studio $2."
@@ -124,6 +124,7 @@ EOF
                 echo -e "${WARNING} An error occurred trying to install StreamBase Studio $2."
                 return 1
             fi
+            echo -e "${INFO} IMPORTANT: Update your svn 'trunk' checkout!"
         fi
     elif [ $1 = "ls-conf" ]; then
         if [ $# -ne 1 ]; then

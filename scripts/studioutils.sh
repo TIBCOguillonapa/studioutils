@@ -185,6 +185,7 @@ function clean {
     ls "${TEMP_DIR}" | wc -l | awk -v INFO_STRING="$INFO" '{printf "%s Found %s workspace(s) to remove.\n", INFO_STRING, $1}'
     rm -rf "${TEMP_DIR}"
     mkdir "${TEMP_DIR}"
+    touch "${TEMP_DIR}/.placeholder"
 }
 
 function openStudio {
@@ -333,6 +334,7 @@ function clearBuilds {
     echo -e "${INFO} Deleting all Studio installations from 'builds' directory..."
     rm -rf "${BUILDS_INSTALL_PATH}"
     mkdir "${BUILDS_INSTALL_PATH}"
+    touch "${BUILDS_INSTALL_PATH}/.placeholder"
 }
 
 function showBuilds {

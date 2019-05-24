@@ -4,6 +4,8 @@
 ## Script variables - Product installation location
 PRODUCT_INSTALL_PATH="${STUDIOUTILS_LOCATION}/product"
 INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
+## Script variables - Builds installation location
+BUILDS_INSTALL_PATH="${STUDIOUTILS_LOCATION}/builds"
 ## Script variables - Location for temporary workspaces
 TEMP_DIR="${STUDIOUTILS_LOCATION}/temp_workspaces"
 ## Script variables - Location for *.ini files
@@ -46,19 +48,24 @@ cat << EOF
             ------------------------------------------------------------------------------------------
 
             STUDIO UTILITIES -------------------------------------------------------------------------
+            clean                           Deletes all workspaces opend with -t flag.
+            install <product> <version>     Where product is the same as in "sbx install <product>".
+            install-path [-q]               Shows the directory where StreamBase is being installed.
+                  -q                        Prints only the path with no extra decorations.
             ls                              List all Studio installations.
             open [-t] <version>             Open the specified Studio version if installed.
                   -t  <version>             Opens a workspace in a temporary directory.
-            install <product> <version>     Where product is the same as in "sbx install <product>".
             uninstall <version>             Removes the the specified installed version of Studio.
-            install-path                    Shows the directory where StreamBase is being installed.
-            clean                           Deletes all workspaces opend with -t flag.
             ------------------------------------------------------------------------------------------
 
             STUDIO DEVELOPMENT -----------------------------------------------------------------------
+            install-build <branch> <name>   Installs the build for the branch under ./builds/<name>.
+            ls-builds                       Shows a list of all installed builds in ./builds.
+            m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
             monday-morning <version>        A shortcut for the Monday morning routine.
                   --help                    Help menu for 'monday-morning'.
-            m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
+            open-build <name>               Opens StreamBase Studio for the build in .builds/<name>.
+            rm-builds                       Removes all builds from ./builds.
             ------------------------------------------------------------------------------------------
 
 EOF
@@ -158,7 +165,15 @@ function rmConf {
 }
 
 function installPath {
-    echo -e "${INFO} Installation path: ${INSTALL_PATH}"
+    if [ $# -eq 2 ] && [ $2 = "-q" ]; then
+        echo ${INSTALL_PATH}
+        return $SUPPRESS_RETURN_CODE
+    elif [ $# -eq 1 ]; then
+        echo -e "${INFO} Installation path: ${INSTALL_PATH}"
+    else 
+        echo -e "${WARNING} The command 'install-path' take either no arguments or just the -q (quiet) flag."
+        echo -e "${INFO} Installation path: ${INSTALL_PATH}"
+    fi
 }
 
 function lsStudio {
@@ -279,6 +294,52 @@ function m2Routine {
     fi
 }
 
+function buildInstall {
+    if [ $# -ne 3 ]; then
+        echo -e "${WARNING} Wrong number of arguments. Run 'studioutils help' for help."
+        return $SUPPRESS_RETURN_CODE
+    else
+        echo -e "${INFO} Attempting to install build for '$2'."
+        if [ -d "${BUILDS_INSTALL_PATH}/$3" ]; then
+            echo -e "${WARNING} A directory named '$3' already exists. All contents will be overwritten..."
+        else
+            mkdir "${BUILDS_INSTALL_PATH}/$3"
+        fi
+        sbx install --no-uninstall --root "${BUILDS_INSTALL_PATH}/$3" "$2"
+        if [ $? -ne 0 ]; then
+            echo -e "${WARNING} An error occured while installing StreamBase Studio."
+            return 1
+        fi
+    fi
+}
+
+function openBuild {
+    if [ $# -ne 2 ]; then
+        echo -e "${WARNING} Wrong number of arguments. Run 'studioutils help' for help."
+    else
+        if [ -d "${BUILDS_INSTALL_PATH}/$2/tibco/sb-cep" ]; then
+            temp="${BUILDS_INSTALL_PATH}/$2/tibco/sb-cep"
+            version=$(ls $temp)
+            echo -e "${INFO} Opening a new workspace for '$2' [StreamBase Studio $version]"
+            open "$temp/$version/StreamBase Studio ${version}.app"
+        else
+            echo -e "${ERROR} There is no build at ${BUILDS_INSTALL_PATH}/$2."
+            return 1
+        fi
+    fi
+}
+
+function clearBuilds {
+    echo -e "${INFO} Deleting all Studio installations from 'builds' directory..."
+    rm -rf "${BUILDS_INSTALL_PATH}"
+    mkdir "${BUILDS_INSTALL_PATH}"
+}
+
+function showBuilds {
+    ls -l "${BUILDS_INSTALL_PATH}"
+    return $SUPPRESS_RETURN_CODE
+}
+
 function do_the_stuff {
     if [ $1 = "monday-morning" ]; then
         mondayMorning $@
@@ -300,6 +361,14 @@ function do_the_stuff {
         uninstall $@
     elif [ $1 = "m2" ]; then
         m2Routine $@
+    elif [ $1 = "install-build" ]; then
+        buildInstall $@
+    elif [ $1 = "open-build" ]; then
+        openBuild $@
+    elif [ $1 = "rm-builds" ]; then
+        clearBuilds $@
+    elif [ $1 = "ls-builds" ]; then
+        showBuilds $@
     else
         echo -e "${WARNING} Not a valid set of arguments."
         echo -e "${INFO} *** Run 'studio_conf.sh --help' to list all valid options."

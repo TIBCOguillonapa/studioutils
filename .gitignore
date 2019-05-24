@@ -7,3 +7,6 @@ configuration/*
 
 temp_workspaces/*
 !temp_workspaces/.placeholder
+
+builds/*
+!builds/.placeholder

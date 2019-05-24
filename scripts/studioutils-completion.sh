@@ -4,6 +4,8 @@
 ## Script variables - Product installation location
 PRODUCT_INSTALL_PATH="${STUDIOUTILS_LOCATION}/product"
 INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
+## Script variables - Builds installation location
+BUILDS_INSTALL_PATH="${STUDIOUTILS_LOCATION}/builds"
 ## Script variables - Location for temporary workspaces
 TEMP_DIR="${STUDIOUTILS_LOCATION}/temp_workspaces"
 ## Script variables - Location for *.ini files
@@ -14,7 +16,7 @@ function suggest() {
     if [ "${#COMP_WORDS[@]}" == "2" ]; then
         # Don't allow words that start with '-'
         if [[ "${COMP_WORDS[1]}" != -* ]]; then
-            COMPREPLY=($(compgen -W "ls-conf rm-conf ls open install uninstall install-path clean m2 help monday-morning" "${COMP_WORDS[1]}"))
+            COMPREPLY=($(compgen -W "ls-conf rm-conf ls open install uninstall install-path clean m2 help monday-morning install-build open-build rm-builds ls-builds" "${COMP_WORDS[1]}"))
         fi
     elif [ "${COMP_WORDS[1]}" == "m2" ] && [ "${#COMP_WORDS[@]}" == "3" ]; then
         # Don't allow words that start with '-'
@@ -55,6 +57,10 @@ function suggest() {
             COMPREPLY=($(compgen -d "${COMP_WORDS[2]}"))
             cd "$CURR_LOC"
         fi
+    elif [ "${COMP_WORDS[1]}" == "open-build" ] && [ "${#COMP_WORDS[@]}" == "3" ]; then
+        cd "$BUILDS_INSTALL_PATH"
+            COMPREPLY=($(compgen -d "${COMP_WORDS[2]}"))
+        cd "$CURR_LOC"
     fi
 }
 

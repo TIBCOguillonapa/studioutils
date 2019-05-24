@@ -9,6 +9,7 @@ A shell script with utilities for TIBCO StreamBase Studio developers. Clone this
 * A way to open "temporary" workspaces that will not clutter your file system.
 * An easy command to remove all your "temporary" workspaces.
 * Useful development routines for Studio developers.
+* An easy way to install personal builds of StreamBase Studio and manage them.
 
 ## Getting Started
 
@@ -96,19 +97,24 @@ exists at:
         ------------------------------------------------------------------------------------------
 
         STUDIO UTILITIES -------------------------------------------------------------------------
+        clean                           Deletes all workspaces opend with -t flag.
+        install <product> <version>     Where product is the same as in "sbx install <product>".
+        install-path [-q]               Shows the directory where StreamBase is being installed.
+                -q                      Prints only the path with no extra decorations.
         ls                              List all Studio installations.
         open [-t] <version>             Open the specified Studio version if installed.
                 -t  <version>           Opens a workspace in a temporary directory.
-        install <product> <version>     Where product is the same as in "sbx install <product>".
         uninstall <version>             Removes the the specified installed version of Studio.
-        install-path                    Shows the directory where StreamBase is being installed.
-        clean                           Deletes all workspaces opend with -t flag.
         ------------------------------------------------------------------------------------------
 
         STUDIO DEVELOPMENT -----------------------------------------------------------------------
+        install-build <branch> <name>   Installs the build for the branch under ./builds/<name>.
+        ls-builds                       Shows a list of all installed builds in ./builds.
+        m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
         monday-morning <version>        A shortcut for the Monday morning routine.
                 --help                  Help menu for 'monday-morning'.
-        m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
+        open-build <name>               Opens StreamBase Studio for the build in .builds/<name>.
+        rm-builds                       Removes all builds from ./builds.
         ------------------------------------------------------------------------------------------
 ```
 

@@ -2,14 +2,16 @@
 # Guillermo Narvaez
 
 ## Script variables - Product installation location
-PRODUCT_INSTALL_PATH="${STUDIOUTILS_LOCATION}/product"
+PRODUCT_INSTALL_PATH="${STUDIOUTILS_HOME}/product"
 INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
 ## Script variables - Builds installation location
-BUILDS_INSTALL_PATH="${STUDIOUTILS_LOCATION}/builds"
+BUILDS_INSTALL_PATH="${STUDIOUTILS_HOME}/builds"
 ## Script variables - Location for temporary workspaces
-TEMP_DIR="${STUDIOUTILS_LOCATION}/temp_workspaces"
+TEMP_DIR="${STUDIOUTILS_HOME}/temp_workspaces"
 ## Script variables - Location for *.ini files
-INI_DIR="${STUDIOUTILS_LOCATION}/configuration"
+INI_DIR="${STUDIOUTILS_HOME}/configuration"
+## Script variables - Studio Configuration Area
+STUDIO_CONFIGURATION_AREA="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
 
 # Text formatting
 RED='\033[0;31m'
@@ -24,6 +26,7 @@ ERROR="${RED}[ERROR]${NC}"
 EXIT="${BLUE}[EXIT]${NC}"
 
 declare -i SUPPRESS_RETURN_CODE=2
+declare -i FAILED_SANITY_CHECK=3
 
 #### Help menus ####
 
@@ -40,7 +43,8 @@ cat << EOF
 
             The following are valid command options:
 
-            help, --help, -help, -h         Open the help menu.
+            help, --help, -help, -h         Display this help.
+            init                            Initialize the directories used by 'studioutils'.
 
             CONFIGURATION AREA -----------------------------------------------------------------------
             ls-conf                         List the existing configuration areas.
@@ -48,7 +52,7 @@ cat << EOF
             ------------------------------------------------------------------------------------------
 
             STUDIO UTILITIES -------------------------------------------------------------------------
-            clean                           Deletes all workspaces opend with -t flag.
+            clean                           Deletes all workspaces opened with -t flag.
             install <product> <version>     Where product is the same as in "sbx install <product>".
             install-path [-q]               Shows the directory where StreamBase is being installed.
                   -q                        Prints only the path with no extra decorations.
@@ -88,10 +92,10 @@ EOF
 
 function file_suffix {
     declare -i var=1
-    while [ -d "${TEMP_DIR}/Temporary_Workspace_${var}" ]; do
+    while [ -d "${TEMP_DIR}/Temp_Workspace_${var}" ]; do
         var=$((var+1))
     done
-    echo "${TEMP_DIR}/Temporary_Workspace_${var}"
+    echo "${TEMP_DIR}/Temp_Workspace_${var}"
 }
 
 function insert_temp_ini_file {
@@ -342,6 +346,35 @@ function showBuilds {
     return $SUPPRESS_RETURN_CODE
 }
 
+function initDirectories {
+    if [ ! -d "$STUDIOUTILS_HOME" ]; then
+        mkdir "$STUDIOUTILS_HOME"
+    fi
+    if [ ! -d "$STUDIOUTILS_HOME/builds" ]; then
+        mkdir "$STUDIOUTILS_HOME/builds"
+    fi
+    if [ ! -d "$STUDIOUTILS_HOME/configuration" ]; then
+        mkdir "$STUDIOUTILS_HOME/configuration"
+    fi
+    if [ ! -d "$STUDIOUTILS_HOME/product" ]; then
+        mkdir "$STUDIOUTILS_HOME/product"
+        mkdir "$STUDIOUTILS_HOME/product/tibco"
+        mkdir "$STUDIOUTILS_HOME/product/tibco/sb-cep"
+    else
+        if [ ! -d "$STUDIOUTILS_HOME/product/tibco" ]; then
+            mkdir "$STUDIOUTILS_HOME/product/tibco"
+            mkdir "$STUDIOUTILS_HOME/product/tibco/sb-cep"
+        else
+            if [ ! -d "$STUDIOUTILS_HOME/product/tibco/sb-cep" ]; then
+                mkdir "$STUDIOUTILS_HOME/product/tibco/sb-cep"
+            fi
+        fi
+    fi
+    if [ ! -d "$STUDIOUTILS_HOME/temp_workspaces" ]; then
+        mkdir "$STUDIOUTILS_HOME/temp_workspaces"
+    fi
+}
+
 function do_the_stuff {
     if [ $1 = "monday-morning" ]; then
         mondayMorning $@
@@ -378,15 +411,41 @@ function do_the_stuff {
     fi
 }
 
-# TODO need a script to initialize the preferences for this script
+function sanity_check {
+    if [[ ! -z "$STUDIOUTILS_HOME" ]]; then
+        if [ ! -d "$STUDIOUTILS_HOME" ]; then
+            echo -e "${WARNING} Not all directories have been created appropriately at ${STUDIOUTILS_HOME}."
+            echo -e "${INFO} Run 'studioutils init' to initialize the required directories"
+            return $FAILED_SANITY_CHECK
+        else
+            # check all necessary subdirectories
+            if [ ! -d "$STUDIOUTILS_HOME/builds" ] || [ ! -d "$STUDIOUTILS_HOME/temp_workspaces" ] || [ ! -d "$STUDIOUTILS_HOME/configuration" ] || [ ! -d "$STUDIOUTILS_HOME/product" ]; then
+                echo -e "${WARNING} Not all directories have been created appropriately at ${STUDIOUTILS_HOME}."
+                echo -e "${INFO} Run 'studioutils init' to initialize the required directories"
+                return $FAILED_SANITY_CHECK
+            fi
+        fi
+    else
+        echo -e "${WARNING} The variable 'STUDIOUTILS_HOME' has to be set in the environment to a valid path in the file system."
+        return $FAILED_SANITY_CHECK
+    fi
+}
+
 # TODO start new development workspaces (with eclipse preferences)
 
 function main {
     if [ $# -eq 0 ] || [ $1 = "--help" ] || [ $1 = "-help" ] || [ $1 = "-h" ] || [ $1 = "help" ]; then
         show_help
         return $SUPPRESS_RETURN_CODE
+    elif [ $1 = "init" ]; then
+        initDirectories
     else
-        do_the_stuff $@
+        sanity_check
+        if [ $? -eq 0 ]; then
+            do_the_stuff $@
+        else
+            return $SUPPRESS_RETURN_CODE
+        fi
     fi
 }
 

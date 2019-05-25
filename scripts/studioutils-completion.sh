@@ -2,21 +2,23 @@
 # Guillermo Narvaez
 
 ## Script variables - Product installation location
-PRODUCT_INSTALL_PATH="${STUDIOUTILS_LOCATION}/product"
+PRODUCT_INSTALL_PATH="${STUDIOUTILS_HOME}/product"
 INSTALL_PATH="${PRODUCT_INSTALL_PATH}/tibco/sb-cep"
 ## Script variables - Builds installation location
-BUILDS_INSTALL_PATH="${STUDIOUTILS_LOCATION}/builds"
+BUILDS_INSTALL_PATH="${STUDIOUTILS_HOME}/builds"
 ## Script variables - Location for temporary workspaces
-TEMP_DIR="${STUDIOUTILS_LOCATION}/temp_workspaces"
+TEMP_DIR="${STUDIOUTILS_HOME}/temp_workspaces"
 ## Script variables - Location for *.ini files
-INI_DIR="${STUDIOUTILS_LOCATION}/configuration"
+INI_DIR="${STUDIOUTILS_HOME}/configuration"
+## Script variables - Studio Configuration Area
+STUDIO_CONFIGURATION_AREA="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
 
 function suggest() {
     CURR_LOC=$(pwd)
     if [ "${#COMP_WORDS[@]}" == "2" ]; then
         # Don't allow words that start with '-'
         if [[ "${COMP_WORDS[1]}" != -* ]]; then
-            COMPREPLY=($(compgen -W "ls-conf rm-conf ls open install uninstall install-path clean m2 help monday-morning install-build open-build rm-builds ls-builds" "${COMP_WORDS[1]}"))
+            COMPREPLY=($(compgen -W "ls-conf rm-conf ls open install uninstall install-path clean m2 help monday-morning install-build open-build rm-builds ls-builds init" "${COMP_WORDS[1]}"))
         fi
     elif [ "${COMP_WORDS[1]}" == "m2" ] && [ "${#COMP_WORDS[@]}" == "3" ]; then
         # Don't allow words that start with '-'

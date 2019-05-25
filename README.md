@@ -1,6 +1,6 @@
 # studioutils
 
-A shell script with utilities for TIBCO StreamBase Studio developers. Clone this repository and follow the instructions below to get started.
+A shell script with utilities for TIBCO StreamBase Studio developers. Follow the instructions below to get started.
 
 ## What is it?
 
@@ -13,34 +13,46 @@ A shell script with utilities for TIBCO StreamBase Studio developers. Clone this
 
 ## Getting Started
 
+### Installation
+
+To install 'studioutils' you can use Homebrew. First, you will need to tap the Homebrew repository.
+
+```
+brew tap gunarvae/hb-osx
+```
+
+Then, install the package.
+
+```
+brew install studioutils
+```
+
 ### Configuring the Script (Environment Variables)
 
-There are two variables that are used in the script that you will need to configure manually. **These variables need to be part of the environment in order for the script to work**. Export each of these in `~/.bash_profile` or a similar place.
+There is a single variable that is used in the script that you will need to configure manually. **This variable needs to be part of the environment in order for the script to work**. Export it in `~/.bash_profile` or a similar place.
 
-The first variable is the path to the cloned repository `STUDIOUTILS_LOCATION`, i.e.  the directory called `studioutils`.
-
-```
-export STUDIOUTILS_LOCATION="/Users/$USER/Development/GitHub/studioutils"
-```
-
-The second variable is the path to the configuration area that TIBCO StreamBase Studio uses.
+This variable should be called `STUDIOUTILS_HOME`, and it needs to be a path to the directory that `studioutils` will use. The path to the directory needs to be valide, but the directory itself doesn't have to exist already.
 
 ```
-export STUDIO_CONFIGURATION_AREA="/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/"
+export STUDIOUTILS_HOME="/Users/$USER/Development/studioutils"
 ```
 
-These two environment variables will be used by the scripts to define `PRODUCT_INSTALL_PATH`, `INSTALL_PATH`, `TEMP_DIR`, and `INI_DIR`.
+This script assumes that the configuration area that TIBCO StreamBase Studio uses is located at `/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/`.
+
+`STUDIOUTILS_HOME` will be used by the scripts to define `PRODUCT_INSTALL_PATH`, `INSTALL_PATH`, `TEMP_DIR`, and `INI_DIR`.
 
 * `PRODUCT_INSTALL_PATH`: The directory where `sbx` will install new versions of Studio.
 * `INSTALL_PATH`: The directory where we can find the actual installations of Studio (10.4, 10.5, etc.).
 * `TEMP_DIR`: The directory where temporary directories will be created.
 * `INI_DIR`: The directory that will contain *.ini configuration files to start Studio workspaces.
 
-**Note:** Nothing within the `studioutils` directory should be modified manually.
+**Note:** Nothing within the directory referenced by `STUDIOUTILS_HOME` should be modified manually.
 
 ### Configuring the Script (Auto-Completion)
 
-In order for autocomplete to work you need to source the `studioutils-completion.sh` script. First, create a symbolic link in a directory that is already part of your path like this:
+In order for autocomplete to work you need to download and source the `studioutils-completion.sh` script. 
+
+First, create a symbolic link in a directory that is already part of your path like this:
 
 ```
 ln -s /<path-to-studioutils>/scripts/studioutils-completion.sh /usr/local/bin/studioutils-completion
@@ -53,26 +65,6 @@ source studioutils-completion
 ```
 
 If you decided to not create a symbolic link, you can then source the `studioutils-completion.sh` file using it's absolute path.
-
-### Executing the Script
-
-After you have cloned the repository and followed the steps above, you will need to make the script executable. To do so, run:
-
-```
-chmod +x /<path-to-studioutils>/scripts/studioutils.sh
-```
-
-After that, you will need to make sure that the script is located in a directory that is part of your path. For this, I suggest creating a symbolic link in a directory that is already part of your path. For example, you can create the link in `/usr/local/bin` or `$HOME/bin` if you have your own directory for scripts. To create the link you need the following.
-
-```
-ln -s /<path-to-studioutils>/scripts/studioutils.sh /usr/local/bin/studioutils
-```
-
-If you decide to put the symbolic link somewhere else, you will need to include that directory in your path.
-
-```
-export PATH=$PATH:/path/to/directory
-```
 
 ## Usage
 
@@ -90,6 +82,7 @@ exists at:
         The following are valid command options:
 
         help, --help, -help, -h         Open the help menu.
+        init                            Initialize the directories used by 'studioutils'.
 
         CONFIGURATION AREA -----------------------------------------------------------------------
         ls-conf                         List the existing configuration areas.

@@ -36,7 +36,7 @@ cat << EOF
     studio_config is a simple utility script to manage StreamBase Studio 
     installations and configurations. This script was written for Mac.
 
-    In order for this script to work, you will need to export `STUDIOUTILS_HOME`
+    In order for this script to work, you will need to export 'STUDIOUTILS_HOME'
     as part of your environment. This variable (a path to a directory) will be 
     used by this script to manage installations, workspaces, etc. The script also 
     assumes that the configuration area exists at:

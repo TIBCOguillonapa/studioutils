@@ -33,7 +33,7 @@ declare -i FAILED_SANITY_CHECK=3
 function show_help {
 cat << EOF
     
-    studio_config is a simple utility script to manage StreamBase Studio 
+    studioutils is a simple utility script to manage StreamBase Studio 
     installations and configurations. This script was written for Mac.
 
     In order for this script to work, you will need to export 'STUDIOUTILS_HOME'
@@ -42,47 +42,336 @@ cat << EOF
     assumes that the configuration area exists at:
     /Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/
 
-            The following are valid command options:
+    The following are valid command options:
 
-    --->    GETTING STARTED
-            help, --help, -help, -h         Display this help.
-            init                            Initialize the directories used by 'studioutils'.
+    builds
+    configs
+    init
+    install
+    installs
+    help
+    m2
+    monday-morning
 
-    --->    CONFIGURATION AREA
-            ls-conf                         List the existing configuration areas.
-            rm-conf <version>               Remove the configuration area for <version>.
 
-    --->    STUDIO UTILITIES
-            clean                           Deletes all workspaces opened with -t flag.
-            install <product> <version>     Where product is the same as in "sbx install <product>".
-            install-path [-q]               Shows the directory where StreamBase is being installed.
-                  -q                        Prints only the path with no extra decorations.
-            ls                              List all Studio installations.
-            open [-t] <version>             Open the specified Studio version if installed.
-                  -t  <version>             Opens a workspace in a temporary directory.
-            uninstall <version>             Removes the the specified installed version of Studio.
 
-    --->    STUDIO DEVELOPMENT
-            install-build <branch> <name>   Installs the build for the branch under ./builds/<name>.
-            ls-builds                       Shows a list of all installed builds in ./builds.
-            m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
-            monday-morning <version>        A shortcut for the Monday morning routine.
-                  --help                    Help menu for 'monday-morning'.
-            open-build <name>               Opens StreamBase Studio for the build in .builds/<name>.
-            rm-builds                       Removes all builds from ./builds.
+    help, --help, -help, -h             Display this help.
+    init                                Initialize the directories used by 'studioutils'.
+
+    configs                             List the existing configuration areas.
+    configs rm <version>                Remove the configuration area for <version>.
+
+    install <product> <version>         Where product is the same as in "sbx install <product>".
+    installs                            List all Studio installations.
+    installs path [-q]                  Shows the directory where StreamBase is being installed.
+            -q                          Prints only the path with no extra decorations.
+    installs open [-s] <version>        Opens a workspace in a temporary directory.
+            -s  <version>               Opens a workspace and prompts user for workspace location.
+    installs rm <version>               Removes the the specified installed version of Studio.
+    installs rm [-a|--all] [<version>]  Deletes all workspaces opened with -t flag.
+
+    m2 <dev|studio>                     Toggle, remove (studio) or place (dev) maven settings file.
+
+    monday-morning <version>            A shortcut for the Monday morning routine.
+            --help                      Help menu for 'monday-morning'.
+
+    builds                              Shows a list of all installed builds in ./builds.
+    builds install <branch> <name>      Installs the build for the branch under ./builds/<name>.
+    builds open <name>                  Opens StreamBase Studio for the build in .builds/<name>.
+            -s <name>
+    builds rm [-a|--all] [<build>]      Removes all builds from ./builds.
+
+EOF
+}
+
+function helpCommand {
+    if [ $# -eq 1 ]; then
+        mainHelp
+    elif [ $# -eq 2 -a $2 = "mondays" ]; then
+        mondayMorningHelp
+    elif [ $# -eq 2 -a $2 = "m2" ]; then
+        m2Help
+    elif [ $# -eq 2 -a $2 = "help" ]; then
+        helpHelp
+    elif [ $# -eq 2 -a $2 = "install" ]; then
+        helpInstall
+    elif [ $# -eq 2 -a $2 = "init" ]; then
+        helpInit
+    elif [ $# -eq 2 -a $2 = "clean" ]; then
+        helpClean
+    elif [ $2 = "installs" ]; then
+        helpInstalls $@
+    elif [ $2 = "builds" ]; then
+        helpBuilds $@
+    elif [ $2 = "configs" ]; then
+        helpConfigs $@
+    else
+        echo -e "${WARNING} No help found for the given arguments."
+    fi
+    return $SUPPRESS_RETURN_CODE
+}
+
+function mainHelp {
+cat << EOF
+studioutils 1.1.0
+Usage: studioutils <command> [<subcommand> ...]
+
+studioutils is a simple utility script to manage StreamBase Studio 
+installations and configurations. This script was written for Mac.
+
+In order for this script to work, you will need to export 'STUDIOUTILS_HOME'
+as part of your environment. This variable (a path to a directory) will be 
+used by this script to manage installations, workspaces, etc. The script also 
+assumes that the configuration area exists at:
+/Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/
+
+The following are valid command options:
+    builds      Group of commands related to Studio builds
+    clean       Removes all temporary workspaces
+    configs     Group of commands related to the configuration area for Studio
+    init        Initializes the directories used by 'studioutils'
+    install     Uses 'sbx' to install the specified build for the corresponding version
+    installs    Group of commands related to Studio installations
+    help        Displays information on specific sets of commands
+    m2          Toggle, remove (studio) or place (dev) maven settings file
+    mondays     A shortcut for the Monday morning routine
+
+See 'studioutils help <command> ...' for information on a specific chain of commands.
+For full documentation, see: https://github.com/TIBCOguillonapa/studioutils#readme
+EOF
+}
+
+function helpInstalls {
+    if [ $# -eq 2 ]; then
+        helpLsInstalls
+    elif [ $# -gt 2 ]; then
+        if [ $3 = "path" ]; then
+            helpInstallsPath
+        elif [ $3 = "open" ]; then
+            helpInstallsOpen
+        elif [ $3 = "rm" ]; then
+            helpInstallsRm
+        else
+            echo -e "${WARNING} No help found for the given arguments."
+        fi
+    else
+        echo -e "${WARNING} No help found for the given arguments."
+    fi
+}
+
+function helpBuilds {
+    if [ $# -eq 2 ]; then
+        helpBuildsLs
+    elif [ $# -gt 2 ]; then
+        if [ $3 = "install" ]; then
+            helpBuildsInstall
+        elif [ $3 = "open" ]; then
+            helpBuildsOpen
+        elif [ $3 = "rm" ]; then
+            helpBuildsRm
+        else
+            echo -e "${WARNING} No help found for the given arguments."
+        fi
+    else
+        echo -e "${WARNING} No help found for the given arguments."
+    fi
+}
+
+function helpConfigs {
+    if [ $# -eq 2 ]; then
+        helpConfigsLs
+    elif [ $# -gt 2 ]; then
+        if [ $3 = "rm" ]; then
+            helpConfigsRm
+        else
+            echo -e "${WARNING} No help found for the given arguments."
+        fi
+    else
+        echo -e "${WARNING} No help found for the given arguments."
+    fi
+}
+
+function helpClean {
+cat << EOF
+Usage: studioutils clean
+
+Removes all the temporary workspaces permanently.
+
+EOF
+}
+
+function helpConfigsRm {
+cat << EOF
+Usage: studioutils configs rm <configuration>
+
+Removes the configuration area specified.
+
+EOF
+}
+
+function helpConfigsLs {
+cat << EOF
+Usage: sutdioutils configs [<subcommand>]
+
+If no other subcommand is specified, it lists the existing configuration
+areas for Studio.
+
+Subcommands include:
+    rm          Removes a specified configuration area
+
+EOF
+}
+
+function helpBuildsRm {
+cat << EOF
+Usage: studioutils builds rm <name>|-a|--all
+
+Removes the specified '<name>' if found in the installed builds of Studio.
+If you wish to remove all installed versions of Studio, include the -a or
+--all flag.
+
+EOF
+}
+
+function helpBuildsOpen {
+cat << EOF
+Usage: studioutils builds open [-s] <name>
+
+Opens the build with the specified name. A new temporary workspace will be
+opened, unless the '-s' flag is specified and the user will be prompted for
+a workspace location.
+
+EOF
+}
+
+function helpBuildsInstall {
+cat << EOF
+Usage: studioutils builds install <branch> <name>
+
+Installs the latest build for the 'branch' in a 'builds' directory.
+If there are any previous build installations with the same name, this
+installation will overwrite it.
+
+EOF
+}
+
+function helpBuildsLs {
+cat << EOF
+Usage: sutdioutils builds [<subcommand>]
+
+If no other subcommand is specified, it lists the installed builds of Studio.
+
+Subcommands include:
+    install     Installs the latest build of the specified branch
+    open        Opens an installed build
+    rm          Removes a specified build
+
+EOF
+}
+
+function helpInstallsRm {
+cat << EOF
+Usage: studioutils installs rm <version>|-a|--all
+
+Removes the specified '<version>' if found in the installed versions of Studio.
+If you wish to remove all installed versions of Studio, include the -a or --all
+flag.
+
+EOF
+}
+
+function helpInstallsOpen {
+cat << EOF
+Usage: studioutils installs open [-s] <version>
+
+Opens the specified version of Studio. If the '-s' flag is included, a new
+workspace will be created in a temporary location. If the flag is not
+included, it will prompt the user for a workspace location. For details on
+how to permanently rmeove temporary workspaces see 'studioutils help clean'.
+
+EOF
+}
+
+function helpInstallsPath {
+cat << EOF
+Usage: studioutils installs path [-q]
+
+Shows the absolute path to Studio installations. If the '-q' flag is included,
+the output will consist of only the path.
+
+EOF
+}
+
+function helpLsInstalls {
+cat << EOF
+Usage: studioutils installs [<subcommand>]
+
+If no other subcommand is specified, it lists the installed versions of Studio.
+
+Subcommands include:
+    open        Opens a workspace for Studio
+    path        Shows the absolute path to Studio installations
+    rm          Removes installations of Studio
+
+EOF
+}
+
+function helpInit {
+cat << EOF
+Usage: studioutils init
+
+Initializes the directories used by 'studioutils'
+
+EOF
+}
+
+function helpInstall {
+cat << EOF
+Usage: studioutils install <branch> <version>
+
+Installs the latest build for the 'branch' in a 'product' directory.
+If there are any previous installs (not builds that have been installed
+using the builds command) with the same version, this installation will
+overwrite it. The version must follow a x.y pattern and match with the
+branch version.
+
+EOF
+}
+
+function helpHelp {
+cat << EOF
+Usage: studioutils help <command> [<command> ...]
+
+Displays information about the command, or list of commands, that have been
+specified.
+
+EOF
+}
+
+function m2Help {
+cat << EOF
+Usage: studioutils m2 <dev|studio>
+
+Adds or removes the 'settings.xml' file in the ~/.m2 directory.
+If 'dev' is passed, it will ensure that 'settings.xml' exists.
+If 'studio' is passed, it will temporarily remove 'settings.xml'.
+And, if no argument is passed, it will toggle between the two options.
+
+A 'settings.xml' file need to exist in ~/.m2 initially for this command
+to work appropriately.
 
 EOF
 }
 
 function mondayMorningHelp {
 cat << EOF
+Usage: studioutils mondays <version>
 
-    'studioutils monday-morning <version>' is a shortcut to the Monday morning routine for
-    the SteamBase Studio developer. Running this will uninstall the specified version of
-    Studio, remove the configuration area for that installation, and it will install the
-    latest trunk build.
+This is a shortcut to the Monday morning routine for SteamBase Studio developers.
+Running this will uninstall the specified version of Studio, remove the configuration 
+area for that installation, and it will install the latest trunk build.
 
-    IMPORTANT: The version passed in this command must match the version of the current trunk.
+IMPORTANT: The version passed in this command must match the version of the current trunk.
 
 EOF
 }
@@ -98,16 +387,80 @@ function file_suffix {
 }
 
 function insert_temp_ini_file {
-    echo -data > "${INI_DIR}/$3/_sbstudio_temp.ini"
-    file_suffix >> "${INI_DIR}/$3/_sbstudio_temp.ini"
-    cat "${INI_DIR}/$3/_sbstudio_default.ini" >> "${INI_DIR}/$3/_sbstudio_temp.ini"
-    rm "${INSTALL_PATH}/$3/StreamBase Studio $3.app/Contents/Eclipse/_sbstudio.ini"
-    cp "${INI_DIR}/$3/_sbstudio_temp.ini" "${INSTALL_PATH}/$3/StreamBase Studio $3.app/Contents/Eclipse/_sbstudio.ini"
+    loc="${INSTALL_PATH}"
+    if [ $# -eq 2 ]; then
+        loc=$2
+    fi
+    echo -data > "${INI_DIR}/$1/_sbstudio_temp.ini"
+    file_suffix >> "${INI_DIR}/$1/_sbstudio_temp.ini"
+    cat "${INI_DIR}/$1/_sbstudio_default.ini" >> "${INI_DIR}/$1/_sbstudio_temp.ini"
+    rm "${loc}/$1/StreamBase Studio $1.app/Contents/Eclipse/_sbstudio.ini"
+    cp "${INI_DIR}/$1/_sbstudio_temp.ini" "${loc}/$1/StreamBase Studio $1.app/Contents/Eclipse/_sbstudio.ini"
 }
 
 function insert_default_ini_file {
-    rm "${INSTALL_PATH}/$2/StreamBase Studio $2.app/Contents/Eclipse/_sbstudio.ini"
-    cp "${INI_DIR}/$2/_sbstudio_default.ini" "${INSTALL_PATH}/$2/StreamBase Studio $2.app/Contents/Eclipse/_sbstudio.ini"
+    loc="${INSTALL_PATH}"
+    if [ $# -eq 2 ]; then
+        loc=$2
+    fi
+    rm "${loc}/$1/StreamBase Studio $1.app/Contents/Eclipse/_sbstudio.ini"
+    cp "${INI_DIR}/$1/_sbstudio_default.ini" "${loc}/$1/StreamBase Studio $1.app/Contents/Eclipse/_sbstudio.ini"
+}
+
+function installsGroup {
+    if [ $# -eq 1 ]; then
+        lsStudio $@
+    elif [ $2 = "path" ]; then # installs path
+        installPath $@
+    elif [ $2 = "rm" ]; then # installs rm
+        if [ $# -eq 3 ] && [ $3 = "-a" -o $3 = "--all" ]; then # installs rm -a|--all
+            uninstallAll
+        elif [ $# -eq 3 ]; then # installs rm <install>
+            uninstall $@
+        else
+            echo -e "${WARNING} Not a valid set of arguments."
+            echo -e "${INFO} *** Run 'studio_conf.sh --help' to list all valid options."
+            return $SUPPRESS_RETURN_CODE
+        fi
+    elif [ $2 = "open" ]; then # installs open
+        openStudio $@
+    else
+        echo -e "${WARNING} Not a valid set of arguments."
+        echo -e "${INFO} *** Run 'studio_conf.sh --help' to list all valid options."
+        return $SUPPRESS_RETURN_CODE
+    fi
+}
+
+function configsGroup {
+    if [ $# -eq 1 ]; then
+        lsConf $@
+    elif [ $2 = "rm" ]; then # configs rm
+        rmConf $@
+    else
+        echo -e "${WARNING} Not a valid set of arguments."
+        echo -e "${INFO} *** Run 'studio_conf.sh --help' to list all valid options."
+        return $SUPPRESS_RETURN_CODE
+    fi
+}
+
+function buildsGroup {
+    if [ $# -eq 1 ]; then
+        showBuilds $@
+    elif [ $2 = "install" ]; then # builds install
+        buildInstall $@
+    elif [ $2 = "open" ]; then # builds open
+        openBuild $@
+    elif [ $2 = "rm" ] && [ $# -eq 3 ]; then # builds rm
+        if [ $3 = "-a" -o $3 = "--all" ]; then
+            clearBuilds $@
+        else
+            rmBuild $@
+        fi
+    else
+        echo -e "${WARNING} Not a valid set of arguments."
+        echo -e "${INFO} *** Run 'studio_conf.sh --help' to list all valid options."
+        return $SUPPRESS_RETURN_CODE
+    fi
 }
 
 #### Top level options ####
@@ -124,12 +477,12 @@ function mondayMorning {
         return $SUPPRESS_RETURN_CODE
     else
         echo -e "${INFO} It's almost Friday... Updating StreamBase Studio $2."
-        do_the_stuff uninstall $2
+        do_the_stuff installs rm $2
         if [ $? -ne 0 ]; then
             echo -e "${WARNING} An error occurred trying to uninstall StreamBase Studio $2."
             return 1
         fi
-        do_the_stuff rm-conf $2
+        do_the_stuff configs rm $2
         if [ $? -ne 0 ]; then
             echo -e "${WARNING} An error occurred trying to remove the configuration area for StreamBase Studio $2."
             return 1
@@ -151,27 +504,27 @@ function lsConf {
 }
 
 function rmConf {
-    if [ $# -ne 2 ]; then
+    if [ $# -ne 3 ]; then
         echo -e "${ERROR} Wrong number of arguments (Expected: 1)."
         return 1
-    elif [ -d  "${STUDIO_CONFIGURATION_AREA}$2" ]; then
-        rm -rf "${STUDIO_CONFIGURATION_AREA}$2"
+    elif [ -d  "${STUDIO_CONFIGURATION_AREA}$3" ]; then
+        rm -rf "${STUDIO_CONFIGURATION_AREA}$3"
         if [ $? -eq 0 ]; then
-            echo -e "${INFO} ${STUDIO_CONFIGURATION_AREA}$2 has been removed."
+            echo -e "${INFO} ${STUDIO_CONFIGURATION_AREA}$3 has been removed."
         else
-            echo -e "${WARNING} ${STUDIO_CONFIGURATION_AREA}$2 could not be removed."
+            echo -e "${WARNING} ${STUDIO_CONFIGURATION_AREA}$3 could not be removed."
             return 1
         fi
     else
-        echo -e "${WARNING} ${STUDIO_CONFIGURATION_AREA}$2 does not exist."
+        echo -e "${WARNING} ${STUDIO_CONFIGURATION_AREA}$3 does not exist."
     fi
 }
 
 function installPath {
-    if [ $# -eq 2 ] && [ $2 = "-q" ]; then
+    if [ $# -eq 3 ] && [ $3 = "-q" ]; then
         echo ${INSTALL_PATH}
         return $SUPPRESS_RETURN_CODE
-    elif [ $# -eq 1 ]; then
+    elif [ $# -eq 2 ]; then
         echo -e "${INFO} Installation path: ${INSTALL_PATH}"
     else 
         echo -e "${WARNING} The command 'install-path' take either no arguments or just the -q (quiet) flag."
@@ -192,32 +545,27 @@ function clean {
 }
 
 function openStudio {
-    if [ $# -eq 3 ] && [ $2 = "-t" ]; then
-        if [ -d "${INSTALL_PATH}/$3" ]; then
-            echo -e "${INFO} Opening workspace in temporary location."
-            insert_temp_ini_file $@
-            if [ $? -ne 0 ]; then
-                echo -e "${WARNING} An error occured while copying .ini files."
-                return 1
-            fi
-            open "${INSTALL_PATH}/$3/StreamBase Studio $3.app"
-        else
-            echo -e "${WARNING} ${INSTALL_PATH}$3 is not a valid directory"
-            return 1
-        fi
-    elif [ $# -ne 2 ]; then
-        echo -e "${WARNING} The arguments given are not valid."
-        return 1
-    elif [ -d "${INSTALL_PATH}/$2" ]; then
+    if [ $# -eq 4 ] && [ $3 = "-s" ]; then
         echo -e "${INFO} Opening a standard workspace."
-        insert_default_ini_file $@
+        insert_default_ini_file $4
         if [ $? -ne 0 ]; then
             echo -e "${WARNING} An error occured while copying .ini files."
             return 1
         fi
-        open "${INSTALL_PATH}/$2/StreamBase Studio $2.app"
+        open "${INSTALL_PATH}/$4/StreamBase Studio $4.app"
+    elif [ $# -ne 3 ]; then
+        echo -e "${WARNING} The arguments given are not valid."
+        return 1
+    elif [ -d "${INSTALL_PATH}/$3" ]; then
+        echo -e "${INFO} Opening workspace in temporary location."
+        insert_temp_ini_file $3
+        if [ $? -ne 0 ]; then
+            echo -e "${WARNING} An error occured while copying .ini files."
+            return 1
+        fi
+        open "${INSTALL_PATH}/$3/StreamBase Studio $3.app"
     else
-        echo -e "${WARNING} ${INSTALL_PATH}$2 is not a valid directory"
+        echo -e "${WARNING} ${INSTALL_PATH}$3 is not a valid directory"
         return 1
     fi
 }
@@ -251,17 +599,29 @@ function install {
 }
 
 function uninstall {
-    if [ $# -ne 2 ]; then
-        echo -e "${WARNING} Wrong number of arguments (Exptected: 1)."
+    if [ $# -ne 3 ]; then
+        echo -e "${WARNING} Wrong number of arguments."
         return 1
-    else
-        rm -rf "${INSTALL_PATH}/$2"
+    elif [ -d "${INSTALL_PATH}/$3" ]; then
+        rm -rf "${INSTALL_PATH}/$3"
         if [ $? -ne 0 ]; then
             echo -e "${WARNING} An error occured while uninstalling StreamBase Studio."
             return 1
         else
-            echo -e "${INFO} StreamBase Studio $2 has been removed."
+            echo -e "${INFO} StreamBase Studio $3 has been removed."
         fi
+    else
+        echo -e "${WARNING} ${INSTALL_PATH}/$3 does not exist."
+    fi
+}
+
+function uninstallAll {
+    rm -rf "${INSTALL_PATH}"
+    if [ $? -ne 0 ]; then
+        echo -e "${WARNING} An error occured while uninstalling StreamBase Studio."
+        return 1
+    else
+        echo -e "${INFO} All versions of StreamBase Studio have been removed."
     fi
 }
 
@@ -299,17 +659,17 @@ function m2Routine {
 }
 
 function buildInstall {
-    if [ $# -ne 3 ]; then
+    if [ $# -ne 4 ]; then
         echo -e "${WARNING} Wrong number of arguments. Run 'studioutils help' for help."
         return $SUPPRESS_RETURN_CODE
     else
-        echo -e "${INFO} Attempting to install build for '$2'."
-        if [ -d "${BUILDS_INSTALL_PATH}/$3" ]; then
-            echo -e "${WARNING} A directory named '$3' already exists. All contents will be overwritten..."
+        echo -e "${INFO} Attempting to install build for '$3'."
+        if [ -d "${BUILDS_INSTALL_PATH}/$4" ]; then
+            echo -e "${WARNING} A directory named '$4' already exists. All contents will be overwritten..."
         else
-            mkdir "${BUILDS_INSTALL_PATH}/$3"
+            mkdir "${BUILDS_INSTALL_PATH}/$4"
         fi
-        sbx install --no-uninstall --root "${BUILDS_INSTALL_PATH}/$3" "$2"
+        sbx install --no-uninstall --root "${BUILDS_INSTALL_PATH}/$4" "$3"
         if [ $? -ne 0 ]; then
             echo -e "${WARNING} An error occured while installing StreamBase Studio."
             return 1
@@ -318,18 +678,30 @@ function buildInstall {
 }
 
 function openBuild {
-    if [ $# -ne 2 ]; then
-        echo -e "${WARNING} Wrong number of arguments. Run 'studioutils help' for help."
-    else
-        if [ -d "${BUILDS_INSTALL_PATH}/$2/tibco/sb-cep" ]; then
-            temp="${BUILDS_INSTALL_PATH}/$2/tibco/sb-cep"
+    if [ $# -eq 4 ] && [ $3 = "-s" ]; then
+        # Temporary workspace for build
+        if [ -d "${BUILDS_INSTALL_PATH}/$4/tibco/sb-cep" ]; then
+            temp="${BUILDS_INSTALL_PATH}/$4/tibco/sb-cep"
             version=$(ls $temp)
-            echo -e "${INFO} Opening a new workspace for '$2' [StreamBase Studio $version]"
+            insert_default_ini_file $version $temp
+            echo -e "${INFO} Opening a standard workspace for '$4' [StreamBase Studio $version]"
             open "$temp/$version/StreamBase Studio ${version}.app"
         else
-            echo -e "${ERROR} There is no build at ${BUILDS_INSTALL_PATH}/$2."
+            echo -e "${ERROR} There is no build at ${BUILDS_INSTALL_PATH}/$4."
             return 1
         fi
+    elif [ $# -ne 3 ]; then
+        echo -e "${WARNING} Wrong number of arguments. Run 'studioutils help' for help."
+    elif [ -d "${BUILDS_INSTALL_PATH}/$3/tibco/sb-cep" ]; then
+        # User chosen workspace for build
+        temp="${BUILDS_INSTALL_PATH}/$3/tibco/sb-cep"
+        version=$(ls $temp)
+        insert_temp_ini_file $version $temp
+        echo -e "${INFO} Opening a new workspace in a temporary location for '$3' [StreamBase Studio $version]"
+        open "$temp/$version/StreamBase Studio ${version}.app"
+    else
+        echo -e "${ERROR} There is no build at ${BUILDS_INSTALL_PATH}/$3."
+        return 1
     fi
 }
 
@@ -338,6 +710,15 @@ function clearBuilds {
     rm -rf "${BUILDS_INSTALL_PATH}"
     mkdir "${BUILDS_INSTALL_PATH}"
     touch "${BUILDS_INSTALL_PATH}/.placeholder"
+}
+
+function rmBuild {
+    if [ -d "${BUILDS_INSTALL_PATH}/$3" ]; then
+        echo -e "${INFO} Deleting '$3' build..."
+        rm -rf "${BUILDS_INSTALL_PATH}/$3"
+    else
+        echo -e "${WARNING} Build '$3' does not exist."
+    fi
 }
 
 function showBuilds {
@@ -375,34 +756,22 @@ function initDirectories {
 }
 
 function do_the_stuff {
-    if [ $1 = "monday-morning" ]; then
+    if [ $1 = "mondays" ]; then # rename
         mondayMorning $@
-    elif [ $1 = "ls-conf" ]; then
-        lsConf $@
-    elif [ $1 = "rm-conf" ]; then
-        rmConf $@
-    elif [ $1 = "install-path" ]; then
-        installPath $@
-    elif [ $1 = "ls" ]; then
-        lsStudio $@
-    elif [ $1 = "clean" ]; then
-        clean $@
-    elif [ $1 = "open" ]; then
-        openStudio $@
+    elif [ $1 = "configs" ]; then
+        configsGroup $@
+    elif [ $1 = "installs" ]; then
+        installsGroup $@
+    elif [ $1 = "builds" ]; then
+        buildsGroup $@
     elif [ $1 = "install" ]; then
         install $@
-    elif [ $1 = "uninstall" ]; then
-        uninstall $@
     elif [ $1 = "m2" ]; then
         m2Routine $@
-    elif [ $1 = "install-build" ]; then
-        buildInstall $@
-    elif [ $1 = "open-build" ]; then
-        openBuild $@
-    elif [ $1 = "rm-builds" ]; then
-        clearBuilds $@
-    elif [ $1 = "ls-builds" ]; then
-        showBuilds $@
+    elif [ $1 = "help" ]; then
+        helpCommand $@
+    elif [ $1 = "clean" ]; then
+        clean $@
     else
         echo -e "${WARNING} Not a valid set of arguments."
         echo -e "${INFO} *** Run 'studio_conf.sh --help' to list all valid options."
@@ -433,8 +802,8 @@ function sanity_check {
 # TODO start new development workspaces (with eclipse preferences)
 
 function main {
-    if [ $# -eq 0 ] || [ $1 = "--help" ] || [ $1 = "-help" ] || [ $1 = "-h" ] || [ $1 = "help" ]; then
-        show_help
+    if [ $# -eq 0 ]; then
+        mainHelp
         return $SUPPRESS_RETURN_CODE
     elif [ $1 = "init" ]; then
         initDirectories

@@ -64,42 +64,29 @@ source /etc/bash_completion.d/studioutils-completion
 At this point, you should be able to type `studioutils` from anywhere in your terminal. Doing so should show you the help menu.
 
 ``` 
-studio_config is a simple utility script to manage StreamBase Studio 
+studioutils 1.1.0
+Usage: studioutils <command> [<subcommand> ...]
+
+studioutils is a simple utility script to manage StreamBase Studio 
 installations and configurations. This script was written for Mac.
 
-In order for this script to work, you will need to export `STUDIOUTILS_HOME`
+In order for this script to work, you will need to export 'STUDIOUTILS_HOME'
 as part of your environment. This variable (a path to a directory) will be 
 used by this script to manage installations, workspaces, etc. The script also 
 assumes that the configuration area exists at:
 /Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/
 
-        The following are valid command options:
+The following are valid command options:
+    builds      Group of commands related to Studio builds
+    clean       Removes all temporary workspaces
+    configs     Group of commands related to the configuration area for Studio
+    init        Initializes the directories used by 'studioutils'
+    install     Uses 'sbx' to install the specified build for the corresponding version
+    installs    Group of commands related to Studio installations
+    help        Displays information on specific sets of commands
+    m2          Toggle, remove (studio) or place (dev) maven settings file
+    mondays     A shortcut for the Monday morning routine
 
---->    GETTING STARTED
-        help, --help, -help, -h         Display this help.
-        init                            Initialize the directories used by 'studioutils'.
-
---->    CONFIGURATION AREA
-        ls-conf                         List the existing configuration areas.
-        rm-conf <version>               Remove the configuration area for <version>.
-
---->    STUDIO UTILITIES
-        clean                           Deletes all workspaces opened with -t flag.
-        install <product> <version>     Where product is the same as in "sbx install <product>".
-        install-path [-q]               Shows the directory where StreamBase is being installed.
-                -q                      Prints only the path with no extra decorations.
-        ls                              List all Studio installations.
-        open [-t] <version>             Open the specified Studio version if installed.
-                -t  <version>           Opens a workspace in a temporary directory.
-        uninstall <version>             Removes the the specified installed version of Studio.
-
---->    STUDIO DEVELOPMENT
-        install-build <branch> <name>   Installs the build for the branch under ./builds/<name>.
-        ls-builds                       Shows a list of all installed builds in ./builds.
-        m2 <dev|studio>                 Toggle, remove (studio) or place (dev) maven settings file.
-        monday-morning <version>        A shortcut for the Monday morning routine.
-                --help                  Help menu for 'monday-morning'.
-        open-build <name>               Opens StreamBase Studio for the build in .builds/<name>.
-        rm-builds                       Removes all builds from ./builds.
+See 'studioutils help <command> ...' for information on a specific chain of commands.
 ```
 

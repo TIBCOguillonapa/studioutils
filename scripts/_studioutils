@@ -1,0 +1,150 @@
+#compdef _studioutils studioutils
+
+function _studioutils {
+    local line
+
+    _arguments \
+        "1: :(builds clean configs init install installs help m2 mondays)" \
+        "*::arg:->args"
+
+    case $line[1] in
+        builds)
+            _studioutils_builds
+        ;;
+        configs)
+            _studioutils_configs
+        ;;
+        install)
+            _studioutils_install
+        ;;
+        installs)
+            _studioutils_installs
+        ;;
+        help)
+            _studioutils_help
+        ;;
+    esac
+}
+
+function _studioutils_builds {
+    local line
+
+    _arguments \
+        "1: :(install open rm)" \
+        "*::arg:->args"
+    
+    case $line[1] in
+        open)
+            _studioutils_builds_open
+        ;;
+        rm)
+            _studioutils_builds_rm
+        ;;
+    esac
+}
+
+function _studioutils_builds_open {
+    _arguments \
+        "-s[Create workspace in a temporary location]" \
+        "1: :_path_files -/ -W $STUDIOUTILS_HOME/builds"
+}
+
+function _studioutils_builds_rm {
+    _arguments \
+        "1: :_path_files -/ -W $STUDIOUTILS_HOME/builds"
+}
+
+function _studioutils_configs {
+    local line
+
+    _arguments \
+        "1: :(rm)" \
+        "*::arg:->args"
+    
+    case $line[1] in
+        rm)
+            _studioutils_configs_rm
+        ;;
+    esac
+}
+
+function _studioutils_configs_rm {
+    _arguments \
+        "1: :_path_files -/ -W /Users/$USER/Library/Application\ Support/com.streambase.sb.sbstudio"
+}
+
+function _studioutils_install {
+    _arguments \
+        "1: :(trunk sb/main/10.4 sb/main/10.5)"
+}
+
+function _studioutils_installs {
+    local line
+
+    _arguments \
+        "1: :(open path rm)" \
+        "*::arg:->args"
+
+    case $line[1] in
+        open)
+            _studioutils_installs_open
+        ;;
+        path)
+            _studioutils_installs_path
+        ;;
+        rm)
+            _studioutils_installs_rm
+        ;;
+    esac
+}
+
+function _studioutils_installs_open {
+    _arguments \
+        "-s[Create workspace in a temporary location]" \
+        "1: :_path_files -/ -W $STUDIOUTILS_HOME/product/tibco/sb-cep" \
+}
+
+function _studioutils_installs_path {
+    _arguments \
+        "-q[Include only path in stdout]"
+}
+
+function _studioutils_installs_rm {
+    _arguments \
+        "1: :_path_files -/ -W $STUDIOUTILS_HOME/product/tibco/sb-cep"
+}
+
+function _studioutils_help {
+    local line
+
+    _arguments \
+        "1: :(builds clean configs init install installs help m2 mondays)" \
+        "*::arg:->args"
+
+    case $line[1] in
+        builds)
+            _studioutils_help_builds
+        ;;
+        configs)
+            _studioutils_help_configs
+        ;;
+        installs)
+            _studioutils_help_installs
+        ;;
+    esac
+}
+
+function _studioutils_help_builds {
+    _arguments \
+        "1: :(install open rm)"
+}
+
+function _studioutils_help_configs {
+    _arguments \
+        "1: :(rm)"
+}
+
+function _studioutils_help_installs {
+    _arguments \
+        "1: :(open path rm)"
+}

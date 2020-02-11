@@ -113,7 +113,7 @@ function helpCommand {
 
 function mainHelp {
 cat << EOF
-studioutils 1.1.0
+studioutils 1.2.0
 Usage: studioutils <command> [<subcommand> ...]
 
 studioutils is a simple utility script to manage StreamBase Studio 
@@ -138,7 +138,7 @@ The following are valid command options:
     open        Open Studio by version or by build name (version takes priority)
 
 See 'studioutils help <command> ...' for information on a specific chain of commands.
-For full documentation, see: https://github.com/TIBCOguillonapa/studioutils#readme
+For full documentation, see: https://github.com/guillonapa/studioutils#readme
 EOF
 }
 

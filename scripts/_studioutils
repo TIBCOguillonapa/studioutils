@@ -20,6 +20,9 @@ function _studioutils {
         installs)
             _studioutils_installs
         ;;
+        open)
+            _studioutils_open
+        ;;
         help)
             _studioutils_help
         ;;
@@ -78,6 +81,13 @@ function _studioutils_install {
         "1: :(trunk sb/main/10.4 sb/main/10.5)"
 }
 
+function _studioutils_open {
+    _arguments \
+        "-s[Create workspace in a temporary location]" \
+        "1: :_path_files -/ -W $STUDIOUTILS_HOME/product/tibco/sb-cep" \
+        "1: :_path_files -/ -W $STUDIOUTILS_HOME/builds"
+}
+
 function _studioutils_installs {
     local line
 
@@ -118,7 +128,7 @@ function _studioutils_help {
     local line
 
     _arguments \
-        "1: :(builds clean configs init install installs help m2 mondays)" \
+        "1: :(builds clean configs init install installs help m2 mondays open)" \
         "*::arg:->args"
 
     case $line[1] in

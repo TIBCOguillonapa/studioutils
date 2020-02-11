@@ -34,7 +34,7 @@ function suggest() {
     elif [ "${COMP_WORDS[1]}" == "help" ] && [ "${#COMP_WORDS[@]}" == "3" ]; then
         # Don't allow words that start with '-'
         if [[ "${COMP_WORDS[2]}" != -* ]]; then
-            COMPREPLY=($(compgen -W "builds clean configs init install installs help m2 mondays" "${COMP_WORDS[2]}"))
+            COMPREPLY=($(compgen -W "builds clean configs init install installs help m2 mondays open" "${COMP_WORDS[2]}"))
         fi
     elif [ "${COMP_WORDS[1]}" == "help" ] && [ "${#COMP_WORDS[@]}" == "4" ]; then
         # Don't allow words that start with '-'
@@ -60,6 +60,22 @@ function suggest() {
                 COMPREPLY=($(compgen -d "${COMP_WORDS[3]}"))
                 cd "$CURR_LOC"
             fi
+        fi
+    elif [ "${COMP_WORDS[1]}" == "open" ] && [ "${#COMP_WORDS[@]}" == "2" ]; then
+        # Don't allow words that start with '-'
+        if [[ "${COMP_WORDS[1]}" != -* ]]; then
+            cd "$BUILDS_INSTALL_PATH"
+            if [[ "${COMP_WORDS[2]}" == -* ]]; then
+                if [[ "${COMP_WORDS[2]}" != "-" ]]; then
+                    COMPREPLY="${COMP_WORDS[2]}"
+                fi
+            else
+                COMPREPLY=($(compgen -d "${COMP_WORDS[2]}"))
+                cd "$CURR_LOC"
+                cd "$INSTALL_PATH"
+                COMPREPLY=($COMPREPLY $(compgen -d "${COMP_WORDS[3]}"))
+            fi
+            cd "$CURR_LOC"
         fi
     elif [ "${COMP_WORDS[1]}" == "builds" ] && [ "${#COMP_WORDS[@]}" == "3" ]; then
         # Don't allow words that start with '-'

@@ -135,6 +135,7 @@ The following are valid command options:
     help        Displays information on specific sets of commands
     m2          Toggle, remove (studio) or place (dev) maven settings file
     mondays     A shortcut for the Monday morning routine
+    open        Open Studio by version or by build name (version takes priority)
 
 See 'studioutils help <command> ...' for information on a specific chain of commands.
 For full documentation, see: https://github.com/TIBCOguillonapa/studioutils#readme
@@ -625,6 +626,71 @@ function uninstallAll {
     fi
 }
 
+function open {
+    is_install=false
+    if [ $# -eq 3 ] && [ $2 = "-s" ]; then
+        if [ -d "${INSTALL_PATH}/$3" ]; then
+            is_install=true
+        fi
+    else
+        if [ $# -eq 2 ] && [ -d "${INSTALL_PATH}/$2" ]; then
+            is_install=true
+        fi
+    fi
+
+    if [ "$is_install" = true ]; then
+        if [ $# -eq 3 ] && [ $2 = "-s" ]; then
+            echo -e "${INFO} Opening a standard workspace."
+            insert_default_ini_file $3
+            if [ $? -ne 0 ]; then
+                echo -e "${WARNING} An error occured while copying .ini files."
+                return 1
+            fi
+            open "${INSTALL_PATH}/$3/StreamBase Studio $3.app"
+        elif [ $# -ne 3 ]; then
+            echo -e "${WARNING} The arguments given are not valid. Run 'studioutils help' for help."
+            return 1
+        elif [ -d "${INSTALL_PATH}/$2" ]; then
+            echo -e "${INFO} Opening workspace in temporary location."
+            insert_temp_ini_file $2
+            if [ $? -ne 0 ]; then
+                echo -e "${WARNING} An error occured while copying .ini files."
+                return 1
+            fi
+            open "${INSTALL_PATH}/$2/StreamBase Studio $2.app"
+        else
+            echo -e "${WARNING} ${INSTALL_PATH}$2 is not a valid directory"
+            return 1
+        fi
+    else
+        if [ $# -eq 3 ] && [ $2 = "-s" ]; then
+            # Temporary workspace for build
+            if [ -d "${BUILDS_INSTALL_PATH}/$3/tibco/sb-cep" ]; then
+                temp="${BUILDS_INSTALL_PATH}/$3/tibco/sb-cep"
+                version=$(ls $temp)
+                insert_default_ini_file $version $temp
+                echo -e "${INFO} Opening a standard workspace for '$3' [StreamBase Studio $version]"
+                open "$temp/$version/StreamBase Studio ${version}.app"
+            else
+                echo -e "${ERROR} There is no build at ${BUILDS_INSTALL_PATH}/$3."
+                return 1
+            fi
+        elif [ $# -ne 2 ]; then
+            echo -e "${WARNING} The arguments given are not valid. Run 'studioutils help' for help."
+        elif [ -d "${BUILDS_INSTALL_PATH}/$2/tibco/sb-cep" ]; then
+            # User chosen workspace for build
+            temp="${BUILDS_INSTALL_PATH}/$2/tibco/sb-cep"
+            version=$(ls $temp)
+            insert_temp_ini_file $version $temp
+            echo -e "${INFO} Opening a new workspace in a temporary location for '$2' [StreamBase Studio $version]"
+            open "$temp/$version/StreamBase Studio ${version}.app"
+        else
+            echo -e "${ERROR} There is no build at ${BUILDS_INSTALL_PATH}/$2."
+            return 1
+        fi
+    fi
+}
+
 function m2Routine {
     if [ ! -f ~/.m2/settings.bak ]; then
         echo -e "${WARNING} No ~/.m2/settings.bak, aborting."
@@ -691,7 +757,7 @@ function openBuild {
             return 1
         fi
     elif [ $# -ne 3 ]; then
-        echo -e "${WARNING} Wrong number of arguments. Run 'studioutils help' for help."
+        echo -e "${WARNING} The arguments given are not valid. Run 'studioutils help' for help."
     elif [ -d "${BUILDS_INSTALL_PATH}/$3/tibco/sb-cep" ]; then
         # User chosen workspace for build
         temp="${BUILDS_INSTALL_PATH}/$3/tibco/sb-cep"
@@ -770,6 +836,8 @@ function do_the_stuff {
         m2Routine $@
     elif [ $1 = "help" ]; then
         helpCommand $@
+    elif [ $1 = "open" ]; then
+        openCommand $@
     elif [ $1 = "clean" ]; then
         clean $@
     else

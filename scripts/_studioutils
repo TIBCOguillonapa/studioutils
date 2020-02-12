@@ -4,7 +4,7 @@ function _studioutils {
     local line
 
     _arguments \
-        "1: :(builds clean configs init install installs help m2 mondays)" \
+        "1: :(builds clean configs init install installs help m2 mondays open)" \
         "*::arg:->args"
 
     case $line[1] in

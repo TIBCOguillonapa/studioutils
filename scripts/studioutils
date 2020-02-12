@@ -626,7 +626,7 @@ function uninstallAll {
     fi
 }
 
-function open {
+function openCommand {
     is_install=false
     if [ $# -eq 3 ] && [ $2 = "-s" ]; then
         if [ -d "${INSTALL_PATH}/$3" ]; then
@@ -647,7 +647,7 @@ function open {
                 return 1
             fi
             open "${INSTALL_PATH}/$3/StreamBase Studio $3.app"
-        elif [ $# -ne 3 ]; then
+        elif [ $# -ne 2 ]; then
             echo -e "${WARNING} The arguments given are not valid. Run 'studioutils help' for help."
             return 1
         elif [ -d "${INSTALL_PATH}/$2" ]; then

@@ -18,7 +18,7 @@ function suggest() {
     if [ "${#COMP_WORDS[@]}" == "2" ]; then
         # Don't allow words that start with '-'
         if [[ "${COMP_WORDS[1]}" != -* ]]; then
-            COMPREPLY=($(compgen -W "builds clean configs init install installs help m2 mondays" "${COMP_WORDS[1]}"))
+            COMPREPLY=($(compgen -W "builds clean configs init install installs help m2 mondays open" "${COMP_WORDS[1]}"))
         fi
     elif [ "${COMP_WORDS[1]}" == "m2" ] && [ "${#COMP_WORDS[@]}" == "3" ]; then
         # Don't allow words that start with '-'

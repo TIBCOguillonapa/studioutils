@@ -64,7 +64,7 @@ source /etc/bash_completion.d/studioutils-completion
 At this point, you should be able to type `studioutils` from anywhere in your terminal. Doing so should show you the help menu.
 
 ``` 
-studioutils 1.1.0
+studioutils 1.2.0
 Usage: studioutils <command> [<subcommand> ...]
 
 studioutils is a simple utility script to manage StreamBase Studio 
@@ -86,6 +86,7 @@ The following are valid command options:
     help        Displays information on specific sets of commands
     m2          Toggle, remove (studio) or place (dev) maven settings file
     mondays     A shortcut for the Monday morning routine
+    open        Open Studio by version or by build name (version takes priority)
 
 See 'studioutils help <command> ...' for information on a specific chain of commands.
 ```

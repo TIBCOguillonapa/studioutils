@@ -51,6 +51,8 @@ This script assumes that the configuration area that TIBCO StreamBase Studio use
 
 ### Configuring the Script (Auto-Completion)
 
+#### Bash
+
 In order for autocomplete to work you need to download and source the `studioutils-completion` script.
 
 First, make sure that you have an `/etc/bash_completion.d/` directory. Create one if you don't already have one. Then, put the `studioutils-completion` script there. Finally, You will need to source the script. Below the export statement for `STUDIOUTILS_HOME`, enter the following.
@@ -59,12 +61,18 @@ First, make sure that you have an `/etc/bash_completion.d/` directory. Create on
 source /etc/bash_completion.d/studioutils-completion
 ```
 
+***Note:** The bash autocomplete has not been tested and might need some tweaks before using it.*
+
+#### Zsh
+
+If you are using **zsh**, you will need to include the directory containing `_studioutils` to the `fpath`. An easy way to enable autocomplete is to copy this file into a directory that is already in the `fpath`, in my case I just added it to `~/.oh-my-zsh/completions`.
+
 ## Usage
 
 At this point, you should be able to type `studioutils` from anywhere in your terminal. Doing so should show you the help menu.
 
 ``` 
-studioutils 1.2.0
+studioutils 1.2.1
 Usage: studioutils <command> [<subcommand> ...]
 
 studioutils is a simple utility script to manage StreamBase Studio 

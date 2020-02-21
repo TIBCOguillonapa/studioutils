@@ -84,8 +84,7 @@ function _studioutils_install {
 function _studioutils_open {
     _arguments \
         "-s[Create workspace in a temporary location]" \
-        "1: :_path_files -/ -W $STUDIOUTILS_HOME/product/tibco/sb-cep" \
-        "1: :_path_files -/ -W $STUDIOUTILS_HOME/builds"
+        "1: :($(ls $STUDIOUTILS_HOME/product/tibco/sb-cep) $(ls $STUDIOUTILS_HOME/builds))"
 }
 
 function _studioutils_installs {

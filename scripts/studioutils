@@ -30,60 +30,6 @@ declare -i FAILED_SANITY_CHECK=3
 
 #### Help menus ####
 
-function show_help {
-cat << EOF
-    
-    studioutils is a simple utility script to manage StreamBase Studio 
-    installations and configurations. This script was written for Mac.
-
-    In order for this script to work, you will need to export 'STUDIOUTILS_HOME'
-    as part of your environment. This variable (a path to a directory) will be 
-    used by this script to manage installations, workspaces, etc. The script also 
-    assumes that the configuration area exists at:
-    /Users/$USER/Library/Application Support/com.streambase.sb.sbstudio/
-
-    The following are valid command options:
-
-    builds
-    configs
-    init
-    install
-    installs
-    help
-    m2
-    monday-morning
-
-
-
-    help, --help, -help, -h             Display this help.
-    init                                Initialize the directories used by 'studioutils'.
-
-    configs                             List the existing configuration areas.
-    configs rm <version>                Remove the configuration area for <version>.
-
-    install <product> <version>         Where product is the same as in "sbx install <product>".
-    installs                            List all Studio installations.
-    installs path [-q]                  Shows the directory where StreamBase is being installed.
-            -q                          Prints only the path with no extra decorations.
-    installs open [-s] <version>        Opens a workspace in a temporary directory.
-            -s  <version>               Opens a workspace and prompts user for workspace location.
-    installs rm <version>               Removes the the specified installed version of Studio.
-    installs rm [-a|--all] [<version>]  Deletes all workspaces opened with -t flag.
-
-    m2 <dev|studio>                     Toggle, remove (studio) or place (dev) maven settings file.
-
-    monday-morning <version>            A shortcut for the Monday morning routine.
-            --help                      Help menu for 'monday-morning'.
-
-    builds                              Shows a list of all installed builds in ./builds.
-    builds install <branch> <name>      Installs the build for the branch under ./builds/<name>.
-    builds open <name>                  Opens StreamBase Studio for the build in .builds/<name>.
-            -s <name>
-    builds rm [-a|--all] [<build>]      Removes all builds from ./builds.
-
-EOF
-}
-
 function helpCommand {
     if [ $# -eq 1 ]; then
         mainHelp
@@ -105,6 +51,8 @@ function helpCommand {
         helpBuilds $@
     elif [ $2 = "configs" ]; then
         helpConfigs $@
+    elif [ $2 = "open" ]; then
+        helpOpen
     else
         echo -e "${WARNING} No help found for the given arguments."
     fi
@@ -113,7 +61,7 @@ function helpCommand {
 
 function mainHelp {
 cat << EOF
-studioutils 1.2.0
+studioutils 1.2.1
 Usage: studioutils <command> [<subcommand> ...]
 
 studioutils is a simple utility script to manage StreamBase Studio 
@@ -190,6 +138,15 @@ function helpConfigs {
     else
         echo -e "${WARNING} No help found for the given arguments."
     fi
+}
+
+function helpOpen {
+cat << EOF
+Usage: studioutils open <version|build>
+
+Open Studio by version or by build name (version takes priority)
+
+EOF
 }
 
 function helpClean {
